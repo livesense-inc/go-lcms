@@ -50,7 +50,7 @@ func (trans *Transform) DeleteTransform() {
 	C.cmsDeleteTransform(trans.trans)
 }
 
-func (trans *Transform) DoTransform(inputBuffer []byte, outputBuffer []byte, length int) error {
+func (trans *Transform) DoTransform(inputBuffer []uint8, outputBuffer []uint8, length int) error {
 	inputLen := len(inputBuffer)
 	outputLen := len(outputBuffer)
 	if inputLen < length {
