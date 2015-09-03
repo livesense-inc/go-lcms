@@ -38,10 +38,10 @@ func (prof *Profile) CloseProfile() {
 	C.cmsCloseProfile(prof.prof)
 }
 
-func CreateTransform(src_prof Profile, dst_prof Profile) *Transform {
+func CreateTransform(src_prof *Profile, src_type CMSType, dst_prof *Profile, dst_type CMSType) *Transform {
 	transform := C.cmsCreateTransform(
-		src_prof.prof, C.TYPE_BGR_8,
-		dst_prof.prof, C.TYPE_BGR_8,
+		src_prof.prof, C.cmsUInt32Number(src_type),
+		dst_prof.prof, C.cmsUInt32Number(dst_type),
 		C.INTENT_PERCEPTUAL, 0)
 	return &Transform{trans: transform}
 }
