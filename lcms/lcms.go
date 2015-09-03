@@ -30,7 +30,7 @@ func OpenProfileFromFile(filename string) *Profile {
 	return &Profile{prof: C.cmsOpenProfileFromFile(csfilename, csmode)}
 }
 
-func cmsCreate_sRGBProfile() *Profile {
+func Create_sRGBProfile() *Profile {
 	return &Profile{prof: C.cmsCreate_sRGBProfile()}
 }
 
