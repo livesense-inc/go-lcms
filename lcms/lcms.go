@@ -10,6 +10,7 @@ package lcms
 import "C"
 
 import (
+	"fmt"
 	"unsafe"
 )
 
@@ -47,4 +48,19 @@ func CreateTransform(src_prof Profile, dst_prof Profile) *Transform {
 
 func (trans *Transform) DeleteTransform() {
 	C.cmsDeleteTransform(trans.trans)
+}
+
+func (trans *Transform) DoTransform(inputBuffer []byte, outputBuffer []byte, length int) error {
+	inputLen := len(inputBuffer)
+	outputLen := len(outputBuffer)
+	if inputLen < length {
+		return fmt.Errorf("DoTransform: inputLen(%d) < length(%d)", inputLen, length)
+	}
+	if outputLen < length {
+		return fmt.Errorf("DoTransform: outputLen(%d) < length(%d)", outputLen, length)
+	}
+	inputPtr := unsafe.Pointer(&inputBuffer)
+	outputPtr := unsafe.Pointer(&outputBuffer)
+	C.cmsDoTransform(trans.trans, inputPtr, outputPtr, C.cmsUInt32Number(length))
+	return nil
 }
