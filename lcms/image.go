@@ -6,14 +6,14 @@ import (
 	"image/color"
 )
 
-func ImageTransformByProfile(src_image image.Image, src_prof Profile, dst_prof Profile) (image.Image, error) {
+func ImageTransformByProfile(src_image image.Image, src_prof, dst_prof *Profile) (image.Image, error) {
 	var dst_image image.Image
 	rect := src_image.Bounds()
 
 	colorModel := src_image.ColorModel()
 	switch colorModel {
 	case color.RGBAModel:
-		transform := CreateTransform(&src_prof, TYPE_RGBA_8, &dst_prof, TYPE_RGBA_8)
+		transform := CreateTransform(src_prof, TYPE_RGBA_8, dst_prof, TYPE_RGBA_8)
 		src_rgba64 := src_image.(*image.RGBA64) // type assertions
 		dst_rgba64 := image.NewRGBA(rect)
 		src_pix := src_rgba64.Pix
