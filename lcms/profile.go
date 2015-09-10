@@ -22,6 +22,12 @@ func OpenProfileFromFile(filename string) *Profile {
 	return &Profile{prof: C.cmsOpenProfileFromFile(csfilename, csmode)}
 }
 
+func OpenProfileFromMem(profdata []byte) *Profile {
+	data := unsafe.Pointer(&profdata[0])
+	dataLen := C.cmsUInt32Number(len(profdata))
+	return &Profile{prof: C.cmsOpenProfileFromMem(data, dataLen)}
+}
+
 func Create_sRGBProfile() *Profile {
 	return &Profile{prof: C.cmsCreate_sRGBProfile()}
 }
