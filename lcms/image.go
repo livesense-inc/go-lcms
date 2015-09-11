@@ -15,6 +15,10 @@ func ImageTransformByProfile(src_image image.Image, src_prof, dst_prof *Profile)
 	switch colorModel {
 	case color.YCbCrModel:
 		transform := CreateTransform(src_prof, TYPE_YCbCr_8, dst_prof, TYPE_YCbCr_8)
+		defer transform.DeleteTransform()
+		if transform.trans == nil {
+			return nil, fmt.Errorf("ImageTransformByProfile: CreateTransform Failedl(colorModel:0x%x)", colorModel)
+		}
 		src_ycbcr := src_image.(*image.YCbCr) // type assertions
 		subsampleratio := src_ycbcr.SubsampleRatio
 		dst_ycbcr := image.NewYCbCr(rect, subsampleratio)
@@ -43,6 +47,10 @@ func ImageTransformByProfile(src_image image.Image, src_prof, dst_prof *Profile)
 		dst_image = image.Image(dst_ycbcr)
 	case color.RGBAModel:
 		transform := CreateTransform(src_prof, TYPE_RGBA_8, dst_prof, TYPE_RGBA_8)
+		defer transform.DeleteTransform()
+		if transform == nil {
+			return nil, fmt.Errorf("ImageTransformByProfile: CreateTransform Failedl(%d)", colorModel)
+		}
 		src_rgba64 := src_image.(*image.RGBA64) // type assertions
 		dst_rgba64 := image.NewRGBA(rect)
 		src_pix := src_rgba64.Pix
