@@ -24,7 +24,9 @@ func CreateTransform(src_prof *Profile, src_type CMSType, dst_prof *Profile, dst
 }
 
 func (trans *Transform) DeleteTransform() {
-	C.cmsDeleteTransform(trans.trans)
+	if trans.trans != nil {
+		C.cmsDeleteTransform(trans.trans)
+	}
 }
 
 func (trans *Transform) DoTransform(inputBuffer []uint8, outputBuffer []uint8, length int) error {

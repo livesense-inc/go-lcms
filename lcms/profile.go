@@ -33,5 +33,7 @@ func Create_sRGBProfile() *Profile {
 }
 
 func (prof *Profile) CloseProfile() {
-	C.cmsCloseProfile(prof.prof)
+	if prof.prof != nil {
+		C.cmsCloseProfile(prof.prof)
+	}
 }
