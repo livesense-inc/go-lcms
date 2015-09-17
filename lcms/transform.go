@@ -38,8 +38,9 @@ func (trans *Transform) DoTransform(inputBuffer []uint8, outputBuffer []uint8, l
 	if outputLen < length {
 		return fmt.Errorf("DoTransform: outputLen(%d) < length(%d)", outputLen, length)
 	}
-	inputPtr := unsafe.Pointer(&inputBuffer)
-	outputPtr := unsafe.Pointer(&outputBuffer)
+	inputPtr := unsafe.Pointer(&inputBuffer[0])
+	outputPtr := unsafe.Pointer(&outputBuffer[0])
+	length /= 4 // XXX?
 	C.cmsDoTransform(trans.trans, inputPtr, outputPtr, C.cmsUInt32Number(length))
 	return nil
 }
