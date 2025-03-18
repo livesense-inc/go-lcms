@@ -1,9 +1,7 @@
 package lcms
 
-/*
-#include <stdlib.h>
-#include <lcms2.h>
-*/
+// #include <stdlib.h>
+// #include <lcms2.h>
 import "C"
 
 import (
@@ -13,14 +11,6 @@ import (
 
 type Transform struct {
 	trans C.cmsHTRANSFORM
-}
-
-func CreateTransform(src_prof *Profile, src_type CMSType, dst_prof *Profile, dst_type CMSType) *Transform {
-	transform := C.cmsCreateTransform(
-		src_prof.prof, C.cmsUInt32Number(src_type),
-		dst_prof.prof, C.cmsUInt32Number(dst_type),
-		C.INTENT_PERCEPTUAL, 0)
-	return &Transform{trans: transform}
 }
 
 func (trans *Transform) DeleteTransform() {
@@ -43,4 +33,12 @@ func (trans *Transform) DoTransform(inputBuffer []uint8, outputBuffer []uint8, l
 	length /= 4 // XXX?
 	C.cmsDoTransform(trans.trans, inputPtr, outputPtr, C.cmsUInt32Number(length))
 	return nil
+}
+
+func CreateTransform(src_prof *Profile, src_type CMSType, dst_prof *Profile, dst_type CMSType) *Transform {
+	transform := C.cmsCreateTransform(
+		src_prof.prof, C.cmsUInt32Number(src_type),
+		dst_prof.prof, C.cmsUInt32Number(dst_type),
+		C.INTENT_PERCEPTUAL, 0)
+	return &Transform{trans: transform}
 }
