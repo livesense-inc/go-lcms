@@ -29,13 +29,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := convertColor(r, w); err != nil {
+	if err := convertColor(r, w, iccProfile); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func convertColor(r io.Reader, w io.Writer) error {
-	srcProf, err := lcms.OpenProfileFromMem(iccProfile)
+func convertColor(r io.Reader, w io.Writer, srcICCProfData []byte) error {
+	srcProf, err := lcms.OpenProfileFromMem(srcICCProfData)
 	if err != nil {
 		return err
 	}
