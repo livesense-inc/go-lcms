@@ -1,0 +1,57 @@
+---
+# @see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+# @see https://github.com/actions/virtual-environments
+# @see https://docs.github.com/en/actions/learn-github-actions/contexts
+# @see https://docs.github.com/en/webhooks/webhook-events-and-payloads
+name: Test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+defaults:
+  run:
+    shell: bash
+jobs:
+  lint:
+    name: Lint
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+      - name: Download modules
+        run: go mod download
+      - name: Run
+        run: go vet ./...
+      - uses: dominikh/staticcheck-action@v1
+        with:
+          version: "latest"
+          install-go: false
+  test:
+    name: Test
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+      - name: Download modules
+        run: go mod download
+      - name: Run
+        run: go run main.go
+      - name: Assert
+        run: ls rgb.jpg
