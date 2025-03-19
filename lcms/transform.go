@@ -10,35 +10,43 @@ import (
 )
 
 type Transform struct {
-	trans C.cmsHTRANSFORM
+	inner C.cmsHTRANSFORM
 }
 
-func (trans *Transform) DeleteTransform() {
-	if trans.trans != nil {
-		C.cmsDeleteTransform(trans.trans)
+func (t *Transform) DeleteTransform() {
+	if t.inner == nil {
+		return
 	}
+	C.cmsDeleteTransform(t.inner)
 }
 
-func (trans *Transform) DoTransform(inputBuffer []uint8, outputBuffer []uint8, length int) error {
-	inputLen := len(inputBuffer)
-	outputLen := len(outputBuffer)
-	if inputLen < length {
-		return fmt.Errorf("DoTransform: inputLen(%d) < length(%d)", inputLen, length)
-	}
-	if outputLen < length {
-		return fmt.Errorf("DoTransform: outputLen(%d) < length(%d)", outputLen, length)
-	}
-	inputPtr := unsafe.Pointer(&inputBuffer[0])
-	outputPtr := unsafe.Pointer(&outputBuffer[0])
-	length /= 4 // XXX?
-	C.cmsDoTransform(trans.trans, inputPtr, outputPtr, C.cmsUInt32Number(length))
+func (t *Transform) DoTransform(in []uint8, out []uint8, size int) error {
+	C.cmsDoTransform(
+		t.inner,
+		unsafe.Pointer(&in[0]),
+		unsafe.Pointer(&out[0]),
+		C.cmsUInt32Number(size),
+	)
 	return nil
 }
 
-func CreateTransform(src_prof *Profile, src_type CMSType, dst_prof *Profile, dst_type CMSType) *Transform {
-	transform := C.cmsCreateTransform(
-		src_prof.prof, C.cmsUInt32Number(src_type),
-		dst_prof.prof, C.cmsUInt32Number(dst_type),
-		C.INTENT_PERCEPTUAL, 0)
-	return &Transform{trans: transform}
+func CreateTransform(
+	srcProf *Profile,
+	srcType CMSType,
+	dstProf *Profile,
+	dstType CMSType,
+) (*Transform, error) {
+	t := C.cmsCreateTransformTHR(
+		C.cmsCreateContext(nil, nil),
+		srcProf.inner,
+		C.cmsUInt32Number(srcType),
+		dstProf.inner,
+		C.cmsUInt32Number(dstType),
+		C.INTENT_PERCEPTUAL,
+		C.cmsUInt32Number(C.cmsFLAGS_NOCACHE),
+	)
+	if t == nil {
+		return nil, fmt.Errorf("failed to create a transform object")
+	}
+	return &Transform{inner: t}, nil
 }

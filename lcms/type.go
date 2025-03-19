@@ -8,6 +8,6 @@ type CMSType int
 const (
 	TYPE_RGB_8   CMSType = C.TYPE_RGB_8
 	TYPE_RGBA_8  CMSType = C.TYPE_RGBA_8
-	TYPE_YCbCr_8 CMSType = C.TYPE_YCbCr_8
 	TYPE_CMYK_8  CMSType = C.TYPE_CMYK_8
+	TYPE_YCbCr_8 CMSType = C.TYPE_YCbCr_8
 )

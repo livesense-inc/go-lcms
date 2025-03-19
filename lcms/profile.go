@@ -5,25 +5,35 @@ package lcms
 import "C"
 
 import (
+	"fmt"
 	"unsafe"
 )
 
 type Profile struct {
-	prof C.cmsHPROFILE
+	inner C.cmsHPROFILE
 }
 
-func (prof *Profile) CloseProfile() {
-	if prof.prof != nil {
-		C.cmsCloseProfile(prof.prof)
+func (p *Profile) CloseProfile() {
+	if p.inner == nil {
+		return
 	}
+	C.cmsCloseProfile(p.inner)
 }
 
-func OpenProfileFromMem(profdata []byte) *Profile {
-	data := unsafe.Pointer(&profdata[0])
-	dataLen := C.cmsUInt32Number(len(profdata))
-	return &Profile{prof: C.cmsOpenProfileFromMem(data, dataLen)}
+func OpenProfileFromMem(d []byte) (*Profile, error) {
+	data := unsafe.Pointer(&d[0])
+	dataLen := C.cmsUInt32Number(len(d))
+	p := C.cmsOpenProfileFromMem(data, dataLen)
+	if p == nil {
+		return nil, fmt.Errorf("failed to open a profile")
+	}
+	return &Profile{inner: p}, nil
 }
 
-func CreateSRGBProfile() *Profile {
-	return &Profile{prof: C.cmsCreate_sRGBProfile()}
+func CreateSRGBProfile() (*Profile, error) {
+	p := C.cmsCreate_sRGBProfile()
+	if p == nil {
+		return nil, fmt.Errorf("failed to open sRGB profile")
+	}
+	return &Profile{inner: p}, nil
 }
