@@ -14,13 +14,13 @@ type Profile struct {
 }
 
 func (p *Profile) CloseProfile() {
-	if p.inner == nil {
-		return
-	}
 	C.cmsCloseProfile(p.inner)
 }
 
 func OpenProfileFromMem(d []byte) (*Profile, error) {
+	if len(d) == 0 {
+		return nil, fmt.Errorf("empty profile data given")
+	}
 	data := unsafe.Pointer(&d[0])
 	dataLen := C.cmsUInt32Number(len(d))
 	p := C.cmsOpenProfileFromMem(data, dataLen)

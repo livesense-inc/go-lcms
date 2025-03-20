@@ -14,13 +14,13 @@ type Transform struct {
 }
 
 func (t *Transform) DeleteTransform() {
-	if t.inner == nil {
-		return
-	}
 	C.cmsDeleteTransform(t.inner)
 }
 
 func (t *Transform) DoTransform(in []uint8, out []uint8, size int) error {
+	if len(in) == 0 || len(out) == 0 {
+		return fmt.Errorf("given buffer is empty")
+	}
 	C.cmsDoTransform(
 		t.inner,
 		unsafe.Pointer(&in[0]),
@@ -36,6 +36,9 @@ func CreateTransform(
 	dstProf *Profile,
 	dstType CMSType,
 ) (*Transform, error) {
+	if srcProf == nil || dstProf == nil {
+		return nil, fmt.Errorf("null profile given")
+	}
 	t := C.cmsCreateTransformTHR(
 		C.cmsCreateContext(nil, nil),
 		srcProf.inner,
