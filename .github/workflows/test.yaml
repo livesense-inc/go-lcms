@@ -59,7 +59,9 @@ jobs:
           cache: true
       - name: Download modules
         run: go mod download
-      - name: Run
+      - name: Run unit test
+        run: go test -race ./...
+      - name: Run feature test
         run: go run main.go
       - name: Assert
         run: ls rgb.jpg
